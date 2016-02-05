@@ -19,8 +19,9 @@ test_contacts = {
     'tum' : '7',
     'tun' : '8',
     'uuo' : '9',
-    'stuart' : '10',
+    'stuart' : '+447949',
     'w'   : '11',
+    'arturo': '+341111',
     }
 
 class TestMenu(unittest.TestCase):

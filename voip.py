@@ -5,11 +5,12 @@ import logging, time, socket
 from menu import Menu
 import os
 from http_auth import requires_auth
-from config import Config
 from secrets import nums
 
 log = logging.getLogger('')
 
+# this doesn't work because the test program can't set it
+# so has to be set on the command line
 TEST_MODE = os.environ.get("TEST_MODE", None)
 if not TEST_MODE:
     from contacts import uk_contacts, es_contacts
@@ -19,17 +20,6 @@ else:
 
 app = Flask(__name__)
 
-def is_my_mobile(number):
-    return number == nums['uk_mobile'] or number == nums['es_mobile']
-
-def get_dial_info(twilio_number):
-    if twilio_number == nums['es_twilio']:
-        return nums['uk_mobile'], 'ES.mp3'
-    elif twilio_number == nums['uk_twilio']:
-        return nums['es_mobile'], 'UK.mp3'
-    else:
-        log.error("no such twilio number! %s" % twilio_number)
-        return None, None
 
 @app.route("/phonebook", methods=['GET', 'POST'])
 @requires_auth
@@ -43,15 +33,25 @@ def phonebook():
         response.say("no numbers found")
         # start phonebook menu again
         get_phonebook_twiml(response)
+
     elif len(options) == 1:
         log.info("calling %s" % (options[0]['name']))
         response.say("calling " + options[0]['name'])
-        response.dial(options[0]['number'])
+
+        # set callerId depending on target country
+        if options[0]['number'].startswith('+44'):
+            from_number = nums['uk_twilio']
+        else:
+            from_number = nums['es_twilio']
+
+        response.dial(options[0]['number'], callerId=from_number)
+
     else:
         log.info("no numbers found")
         response.say("more than 1 number found")
         # start phonebook menu again
         get_phonebook_twiml(response)
+
     return str(response)
         
 @app.route("/dial", methods=['GET', 'POST'])
@@ -59,9 +59,16 @@ def phonebook():
 def dial():
     response = twilio.twiml.Response()
     digits = request.values.get('Digits', None)
-    log.info("dialing %s" % digits)
+
+    # set callerId depending on target country
+    if digits.startswith('0044'):
+        from_number = nums['uk_twilio']
+    else:
+        from_number = nums['es_twilio']
+
+    log.info("dialing %s from %s" % (digits, from_number))
     response.say("calling")
-    response.dial(digits)
+    response.dial(digits, callerId=from_number)
     response.say("The call failed")
     return str(response)
 
@@ -104,8 +111,7 @@ def forward():
     response = twilio.twiml.Response()
 
     # allow from either mobile numbers
-    if is_my_mobile(from_number):
- 
+    if from_number == nums['uk_mobile'] or from_number == nums['es_mobile']:
         with response.gather(numDigits=1, action="/menu", method="POST") as g:
             g.say("phonebook press 1, dial press 2")
  
@@ -113,7 +119,12 @@ def forward():
     
     else:
         # play message in correct language
-        my_number, mp3_file = get_dial_info(to_number)
+        if to_number == nums['es_twilio']:
+            my_number = nums['uk_mobile']
+            mp3_file = 'ES.mp3'
+        else:
+            my_number = nums['es_mobile']
+            mp3_file = 'UK.mp3'
 
         response.play(url_for('static', filename=mp3_file))
 
