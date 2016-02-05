@@ -2,9 +2,10 @@
 
 Provides VOIP services for people calling me, and for me calling people.
 
-Symmetric service that can be flipped between Spanish & English with a text.
+Symmetric service where a call to the UK Twilio number will call my ES mobile
+and vice versa.
 
-Requires Twilio UK & ES landline numbers capable of text and voice.
+Requires Twilio UK & ES landline numbers.
 
 # Spec
 
@@ -19,7 +20,7 @@ Services to include:
 
 Services to include:
 
-* Switch between ES & UK
+* Switch between ES & UK mobiles for when I'm back in the UK.
 * Dictionary lookup, translation services, callbacks etc.
 
 ## Voice from unknown number
@@ -34,6 +35,3 @@ Redirect to Matt's mobile.
 # Todo
 
 * caller id is right for the country call recieved in
-* mode switched by me calling it
-* on startup send text so I know if it's rebooted
-* save state (en vs es)
