@@ -35,7 +35,6 @@ def phonebook():
         get_phonebook_twiml(response)
 
     elif len(options) == 1:
-        log.info("calling %s" % (options[0]['name']))
         response.say("calling " + options[0]['name'])
 
         # set callerId depending on target country
@@ -44,6 +43,7 @@ def phonebook():
         else:
             from_number = nums['es_twilio']
 
+        log.info("calling %s [%s] from %s" % (options[0]['number'], options[0]['name'], from_number))
         response.dial(options[0]['number'], callerId=from_number)
 
     else:
