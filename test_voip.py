@@ -136,6 +136,14 @@ class TestVOIP(unittest.TestCase):
 
         self.assertIn('no numbers found', elems[0].text)
 
+        # check menu starts again
+        elems = root.findall('Gather')
+        self.assertEquals(len(elems), 1)
+
+        elems = elems[0].findall('Say')
+        self.assertEquals(len(elems), 1)
+        self.assertIn('phonebook', elems[0].text)
+
     def test_too_many_phonebook(self):
         response = self.request('POST', '/phonebook', data={'Digits': ntd('tum')}, auth=(http_user, http_pass))
 
@@ -147,6 +155,14 @@ class TestVOIP(unittest.TestCase):
         self.assertEquals(len(elems), 1)
 
         self.assertIn('more than 1 number found', elems[0].text)
+
+        # check menu starts again
+        elems = root.findall('Gather')
+        self.assertEquals(len(elems), 1)
+
+        elems = elems[0].findall('Say')
+        self.assertEquals(len(elems), 1)
+        self.assertIn('phonebook', elems[0].text)
 
     def test_start_noauth(self):
         response = self.app.post('/caller', data={'From': nums['es_mobile'], 'To': nums['es_twilio']})

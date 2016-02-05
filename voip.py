@@ -41,7 +41,8 @@ def phonebook():
     if len(options) == 0:
         log.info("no numbers found")
         response.say("no numbers found")
-        # how do redirect without duplication of code?
+        # start phonebook menu again
+        get_phonebook_twiml(response)
     elif len(options) == 1:
         log.info("calling %s" % (options[0]['name']))
         response.say("calling " + options[0]['name'])
@@ -49,7 +50,8 @@ def phonebook():
     else:
         log.info("no numbers found")
         response.say("more than 1 number found")
-        # do nothing for now, could offer a menu later
+        # start phonebook menu again
+        get_phonebook_twiml(response)
     return str(response)
         
 @app.route("/dial", methods=['GET', 'POST'])
@@ -63,6 +65,12 @@ def dial():
     response.say("The call failed")
     return str(response)
 
+
+def get_phonebook_twiml(response):
+    log.info("phonebook")
+    with response.gather(finishOnKey='*', action="/phonebook", method="POST") as g:
+        g.say("phonebook, type name and * to finish")
+
 @app.route("/menu", methods=['GET', 'POST'])
 @requires_auth
 def menu():
@@ -72,9 +80,7 @@ def menu():
     digit_pressed = request.values.get('Digits', None)
     if digit_pressed == "1":
         # phone book
-        log.info("phonebook")
-        with response.gather(finishOnKey='*', action="/phonebook", method="POST") as g:
-            g.say("phonebook, type name and * to finish")
+        get_phonebook_twiml(response)
         return str(response)
  
     # dial a number
