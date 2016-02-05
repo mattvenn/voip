@@ -7,12 +7,20 @@ class Menu():
         self.contacts = contacts
   
     def get_options(self, digits):
-        combos = self.recurse_combos(digits)
+        all_combos = self.recurse_combos(digits)
+        combos = []
+        # filter out everything that doesn't have the right length
+        for c in all_combos:
+            if len(c) == len(digits):
+                combos.append(c)
+                
+        # filter out anything that doesn't start with a name in the dictionary
         options = []
         for c in combos:
-            if len(digits) == len(c):
-                if c in self.contacts:
-                    options.append({'name' : c, 'number': self.contacts[c]})
+            for name in self.contacts.keys():
+                if name.startswith(c):
+                    options.append({'name' : name, 'number': self.contacts[name]})
+
         return options 
 
 
