@@ -13,8 +13,7 @@ log = logging.getLogger('')
 # so has to be set on the command line
 TEST_MODE = os.environ.get("TEST_MODE", None)
 if not TEST_MODE:
-    from contacts import uk_contacts, es_contacts
-    contacts = uk_contacts
+    from contacts import contacts
 else:
     from test_menu import test_contacts as contacts
 
