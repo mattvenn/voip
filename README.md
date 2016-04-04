@@ -35,3 +35,8 @@ Redirect to Matt's mobile.
 # Todo
 
 * caller id is right for the country call recieved in
+* redo answer message
+* have a set of URLs for browser to:
+    * update phone book, 
+    * upload voice messages,
+    * status page: last log, calls, total call times/costs
