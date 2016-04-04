@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+    <p>Logs</p>
+
+  <div class="log">
+  <ul>
+  {% for line in log_lines %}
+  <li>{{ line }}</li>
+  {% endfor %}
+    </ul>
+  </div>
+  </div>
+{% endblock %}
