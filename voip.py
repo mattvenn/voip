@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, abort, url_for
+from flask import Flask, request, redirect, abort, url_for, render_template
 import twilio.twiml
 from twilio.rest import TwilioRestClient
 import logging, time, socket
@@ -19,6 +19,19 @@ else:
 
 app = Flask(__name__)
 
+@app.route("/")
+@requires_auth
+def index():
+    return render_template('index.html')
+
+@app.route("/logs")
+@requires_auth
+def logs():
+    # do seek
+    with open('voip.log') as log:
+        log_lines = log.readlines()
+    log_lines = log_lines[-20:]
+    return render_template('logs.html', log_lines=log_lines)
 
 @app.route("/phonebook", methods=['GET', 'POST'])
 @requires_auth
