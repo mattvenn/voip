@@ -6,6 +6,7 @@ from menu import Menu
 import os
 from http_auth import requires_auth
 from secrets import nums
+from vcard_dict import Vcard_Dict
 
 log = logging.getLogger('')
 
@@ -14,6 +15,7 @@ log = logging.getLogger('')
 TEST_MODE = os.environ.get("TEST_MODE", None)
 if not TEST_MODE:
     from contacts import contacts
+    contacts = Vcard_Dict('backup.dat')
 else:
     from test_menu import test_contacts as contacts
 
@@ -38,8 +40,16 @@ def logs():
 def phonebook():
     response = twilio.twiml.Response()
     digits = request.values.get('Digits', None)
+    if digits is None:
+        log.info("no keys pressed")
+        response.say("no keys pressed")
+        # start phonebook menu again
+        get_phonebook_twiml(response)
+        return str(response)
+
     menu = Menu(contacts)
     options = menu.get_options(digits)
+
     if len(options) == 0:
         log.info("no numbers found")
         response.say("no numbers found")
@@ -59,7 +69,7 @@ def phonebook():
         response.dial(options[0]['number'], callerId=from_number)
 
     else:
-        log.info("no numbers found")
+        log.info("more than 1 number found")
         response.say("more than 1 number found")
         # start phonebook menu again
         get_phonebook_twiml(response)

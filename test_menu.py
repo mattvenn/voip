@@ -22,6 +22,7 @@ test_contacts = {
     'stuart' : '+447949',
     'w'   : '11',
     'arturo': '+341111',
+    'matt venn' : '100',
     }
 
 class TestMenu(unittest.TestCase):
@@ -67,7 +68,7 @@ class TestMenu(unittest.TestCase):
     def test_single_options_multi_digits(self):
         m = Menu(test_contacts)
 
-        for name in ['matt', 'dad', 'ad']:
+        for name in ['dad', 'ad']:
             self.assertEqual(len(m.get_options(ntd(name))), 1)
             self.assertEqual(test_contacts[name], m.get_options(ntd(name))[0]['number'])
       
@@ -88,6 +89,10 @@ class TestMenu(unittest.TestCase):
         self.assertEqual(len(m.get_options(ntd('stuart'))), 1)
         self.assertEqual(test_contacts['stuart'], m.get_options(ntd('stuart'))[0]['number'])
 
+    def test_ignore_spaces(self):
+        m = Menu(test_contacts)
+        self.assertEqual(len(m.get_options(ntd('matt'))), 2)
+        self.assertEqual(len(m.get_options(ntd('mattv'))), 1)
 
 if __name__ == '__main__':
     unittest.main()
