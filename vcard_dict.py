@@ -7,6 +7,8 @@ then replace all split name lines:
 """
 import os
 import vobject
+import logging
+log = logging.getLogger('contacts')
 
 class Vcard_Dict(dict):
     def __init__(self, filename, verbose=False, *args):
@@ -27,14 +29,17 @@ class Vcard_Dict(dict):
         return num
 
     def parse(self):
+        contacts = 0
         for file in os.listdir(self.filename):
             if file.endswith(".vcf"):
                 with open(self.filename + '/' + file) as vcf:
+                    contacts += 1
                     v = vobject.readOne( vcf )
                     v.tel.value = self.add_country_code(v.tel.value)
                     self[v.n.value.given] = v.tel.value
                     if self.verbose:
                         print(v.n.value.given, v.tel.value)
+        log.info("read %d contacts" % contacts)
 
 if __name__ == '__main__':
     contacts = Vcard_Dict('contacts', verbose=True)

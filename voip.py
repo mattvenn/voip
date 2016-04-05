@@ -14,7 +14,7 @@ log = logging.getLogger('')
 # so has to be set on the command line
 TEST_MODE = os.environ.get("TEST_MODE", None)
 if not TEST_MODE:
-    contacts = Vcard_Dict('backup.dat')
+    contacts = Vcard_Dict('contacts')
 else:
     from test_menu import test_contacts as contacts
 
