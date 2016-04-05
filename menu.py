@@ -19,6 +19,7 @@ class Menu():
         for c in combos:
             for name in self.contacts.keys():
                 strip_name = name.replace(' ','')
+                strip_name = strip_name.lower()
                 if strip_name.startswith(c):
                     options.append({'name' : name, 'number': self.contacts[name]})
 

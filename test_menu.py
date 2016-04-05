@@ -23,6 +23,7 @@ test_contacts = {
     'w'   : '11',
     'arturo': '+341111',
     'matt venn' : '100',
+    'AbCdEf' : '100',
     }
 
 class TestMenu(unittest.TestCase):
@@ -93,6 +94,10 @@ class TestMenu(unittest.TestCase):
         m = Menu(test_contacts)
         self.assertEqual(len(m.get_options(ntd('matt'))), 2)
         self.assertEqual(len(m.get_options(ntd('mattv'))), 1)
+
+    def test_ignore_case(self):
+        m = Menu(test_contacts)
+        self.assertEqual(len(m.get_options(ntd('abcdef'))), 1)
 
 if __name__ == '__main__':
     unittest.main()
