@@ -1,5 +1,5 @@
 import unittest
-from menu import Menu, numbers
+from alt_menu import Menu, numbers
 
 def ntd(name):
     digits = ''
@@ -16,8 +16,6 @@ test_contacts = {
     'da'  : '4',
     'dad' : '5',
     'matt': '66',
-    'tum' : '7',
-    'tun' : '8',
     'uuo' : '9',
     'stuart' : '+447949',
     'w'   : '11',
@@ -38,28 +36,17 @@ class TestMenu(unittest.TestCase):
         self.assertEqual(ntd('matt'), '6288')
         self.assertEqual(ntd('aaa'), '222')
         self.assertEqual(ntd('dad'), '323')
-
     
     def test_init(self):
         m = Menu(test_contacts)
 
-    def test_get_combos(self):
-        m = Menu(test_contacts)
-        combos = m.recurse_combos('222')
-        i = 0
-        for c in combos:
-            if len(c) == 3:
-                i += 1
-        self.assertEqual(i, 3*3*3)
-       
     def test_bad_digits(self):
         m = Menu(test_contacts)
-        with self.assertRaises(AssertionError):
-            m.get_options('xx')
+        self.assertEqual(m.get_options('xx'), [])
 
     def test_no_digits(self):
         m = Menu(test_contacts)
-        self.assertEqual(m.get_options(''), [])
+        assert len(m.get_options('')) == len(test_contacts)
 
     def test_single_options_single_digits(self):
         m = Menu(test_contacts)
@@ -73,11 +60,6 @@ class TestMenu(unittest.TestCase):
             self.assertEqual(len(m.get_options(ntd(name))), 1)
             self.assertEqual(test_contacts[name], m.get_options(ntd(name))[0]['number'])
       
-    def test_multi_options_multi_digits(self):
-        m = Menu(test_contacts)
-
-        for name in ['tum', 'tun', 'uuo']:
-            self.assertEqual(len(m.get_options(ntd(name))), 3)
     
     def test_incomplete_digits(self):
         m = Menu(test_contacts)
