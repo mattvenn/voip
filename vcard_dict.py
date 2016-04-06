@@ -43,5 +43,5 @@ class Vcard_Dict(dict):
 
 if __name__ == '__main__':
     contacts = Vcard_Dict('contacts', verbose=True)
-    contacts['Ben Todd']
+    print(contacts['Ben Todd'])
 
