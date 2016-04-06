@@ -9,6 +9,7 @@ from secrets import nums
 from vcard_dict import Vcard_Dict
 
 log = logging.getLogger()
+app = Flask(__name__)
 
 """
 # this doesn't work because the test program can't set it
@@ -19,7 +20,6 @@ if not TEST_MODE:
 else:
     from test_menu import test_contacts as contacts
 """
-app = Flask(__name__)
 
 @app.route("/")
 @requires_auth
@@ -47,9 +47,7 @@ def phonebook():
         get_phonebook_twiml(response)
         return str(response)
 
-    contacts = Vcard_Dict('contacts')
-    menu = Menu(contacts)
-    options = menu.get_options(digits)
+    options = app.config['MENU'].get_options(digits)
 
     if len(options) == 0:
         log.info("no numbers found")
@@ -166,6 +164,8 @@ if __name__ == "__main__":
     ch.setFormatter(log_format)
     log.addHandler(ch)
 
+    app.config.from_object('config.BaseConfiguration')
+
     hostname = socket.gethostname()
     if hostname == 'mattsmac':
         debug = True
@@ -174,5 +174,5 @@ if __name__ == "__main__":
         debug = False
         log.setLevel(logging.INFO)
 
-    app.run('0.0.0.0',40000,debug=debug)
+    app.run('0.0.0.0',40000)
     log.info("stopping")

@@ -5,7 +5,6 @@ import os
 from test_menu import ntd
 from secrets import http_user, http_pass
 from secrets import nums
-
 import logging
 import base64
 
@@ -13,13 +12,11 @@ log = logging.getLogger('')
 log.setLevel(logging.INFO)
 
 
-# use test environment
-os.environ["TEST_MODE"] = "TRUE"
-
 class TestVOIP(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()
+        app.config.from_object('config.TestConfiguration')
 
     # request handler for basic auth
     def request(self, method, url, auth=None, **kwargs):
@@ -164,7 +161,7 @@ class TestVOIP(unittest.TestCase):
         self.assertIn('phonebook', elems[0].text)
 
     def test_too_many_phonebook(self):
-        response = self.request('POST', '/phonebook', data={'Digits': ntd('tum')}, auth=(http_user, http_pass))
+        response = self.request('POST', '/phonebook', data={'Digits': ntd('a')}, auth=(http_user, http_pass))
 
         self.assertEquals(response.status, "200 OK")
         root = ElementTree.fromstring(response.data)
