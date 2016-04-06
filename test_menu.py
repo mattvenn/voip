@@ -1,5 +1,5 @@
 import unittest
-from alt_menu import Menu, numbers
+from menu import Menu, numbers
 
 def ntd(name):
     digits = ''
