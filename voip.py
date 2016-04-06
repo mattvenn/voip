@@ -8,8 +8,9 @@ from http_auth import requires_auth
 from secrets import nums
 from vcard_dict import Vcard_Dict
 
-log = logging.getLogger('')
+log = logging.getLogger()
 
+"""
 # this doesn't work because the test program can't set it
 # so has to be set on the command line
 TEST_MODE = os.environ.get("TEST_MODE", None)
@@ -17,7 +18,7 @@ if not TEST_MODE:
     contacts = Vcard_Dict('contacts')
 else:
     from test_menu import test_contacts as contacts
-
+"""
 app = Flask(__name__)
 
 @app.route("/")
@@ -46,6 +47,7 @@ def phonebook():
         get_phonebook_twiml(response)
         return str(response)
 
+    contacts = Vcard_Dict('contacts')
     menu = Menu(contacts)
     options = menu.get_options(digits)
 
@@ -68,7 +70,7 @@ def phonebook():
         response.dial(options[0]['number'], callerId=from_number)
 
     else:
-        log.info("more than 1 number found")
+        log.info("%d numbers found for code %s" % (len(options), digits))
         response.say("more than 1 number found")
         # start phonebook menu again
         get_phonebook_twiml(response)
