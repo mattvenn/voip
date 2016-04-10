@@ -59,7 +59,7 @@ def phonebook():
         response.say("calling " + options[0]['name'])
 
         # set callerId depending on target country
-        if options[0]['number'].startswith('+44'):
+        if options[0]['number'].startswith('0044'):
             from_number = nums['uk_twilio']
         else:
             from_number = nums['es_twilio']
