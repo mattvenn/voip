@@ -3,7 +3,7 @@ from contacts import Contacts
 class BaseConfiguration(object):
     DEBUG = False
     TESTING = False
-    #CONTACTS = Contacts('contacts')
+    CONTACTS = Contacts('contacts')
 
 class TestConfiguration(BaseConfiguration):
     from vcard_dict import Vcard_Dict

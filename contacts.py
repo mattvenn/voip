@@ -84,6 +84,7 @@ class Contacts():
         return options
 
     def find_by_number(self, number):
+        number = Contacts.format_number(number)
         for code in self.contacts.keys():
             if self.contacts[code]['number'] == number:
                 return self.contacts[code]

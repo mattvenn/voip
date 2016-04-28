@@ -142,6 +142,8 @@ def forward():
             if contact['mp3'] is not None:
                 mp3_file = contact['mp3']
 
+        log.info("redirecting call from %s to %s with mp3 %s" % (from_number, my_number, mp3_file))
+
         response.play(url_for('static', filename=mp3_file))
 
         # dial my number
