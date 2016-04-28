@@ -2,24 +2,12 @@ from flask import Flask, request, redirect, abort, url_for, render_template
 import twilio.twiml
 from twilio.rest import TwilioRestClient
 import logging, time, socket
-from menu import Menu
 import os
 from http_auth import requires_auth
 from secrets import nums
-from vcard_dict import Vcard_Dict
 
 log = logging.getLogger()
 app = Flask(__name__)
-
-"""
-# this doesn't work because the test program can't set it
-# so has to be set on the command line
-TEST_MODE = os.environ.get("TEST_MODE", None)
-if not TEST_MODE:
-    contacts = Vcard_Dict('contacts')
-else:
-    from test_menu import test_contacts as contacts
-"""
 
 @app.route("/")
 @requires_auth
@@ -47,7 +35,7 @@ def phonebook():
         get_phonebook_twiml(response)
         return str(response)
 
-    options = app.config['MENU'].get_options(digits)
+    options = app.config['CONTACTS'].get_options(digits)
 
     if len(options) == 0:
         log.info("no numbers found")
@@ -59,7 +47,7 @@ def phonebook():
         response.say("calling " + options[0]['name'])
 
         # set callerId depending on target country
-        if options[0]['number'].startswith('0044'):
+        if options[0]['country'] == 'UK':
             from_number = nums['uk_twilio']
         else:
             from_number = nums['es_twilio']
@@ -131,21 +119,28 @@ def forward():
 
     response = twilio.twiml.Response()
 
-    # allow from either mobile numbers
+    # allow from either of my mobile numbers
     if from_number == nums['uk_mobile'] or from_number == nums['es_mobile']:
         with response.gather(numDigits=1, action="/menu", method="POST") as g:
             g.say("phonebook press 1, dial press 2")
  
         return str(response)
     
+    # otherwise it's someone else, so redirect them
     else:
-        # play message in correct language
+        # play message in correct language and call correct number
         if to_number == nums['es_twilio']:
             my_number = nums['uk_mobile']
             mp3_file = 'ES.mp3'
         else:
             my_number = nums['es_mobile']
             mp3_file = 'UK.mp3'
+
+        # maybe they have a custom mp3?
+        contact =  app.config['CONTACTS'].find_by_number(from_number)
+        if contact is not None:
+            if contact['mp3'] is not None:
+                mp3_file = contact['mp3']
 
         response.play(url_for('static', filename=mp3_file))
 

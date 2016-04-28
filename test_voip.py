@@ -122,7 +122,7 @@ class TestVOIP(unittest.TestCase):
         elems = root.findall('Say')
         self.assertEquals(len(elems), 1)
 
-        self.assertIn('calling stuart', elems[0].text)
+        self.assertIn('calling Stuart Childs', elems[0].text)
         elems = root.findall('Dial')
         self.assertEquals(len(elems), 1)
         self.assertEquals(elems[0].get('callerId'), nums['uk_twilio'])
@@ -191,7 +191,7 @@ class TestVOIP(unittest.TestCase):
         root = ElementTree.fromstring(response.data)
         self.assertEquals(root.tag, 'Response')
 
-    def test_start(self):
+    def test_from_unknown_to_es(self):
         response = self.request('POST','/caller', data={'From': 11111, 'To': nums['es_twilio']}, auth=(http_user,http_pass))
 
         self.assertEquals(response.status, "200 OK")
@@ -208,3 +208,32 @@ class TestVOIP(unittest.TestCase):
 
         self.assertIn(nums['uk_mobile'], elems[0].text)
 
+    def test_from_stuart_to_es(self):
+        response = self.request('POST','/caller', data={'From': '00447949', 'To': nums['es_twilio']}, auth=(http_user,http_pass))
+
+        root = ElementTree.fromstring(response.data)
+
+        elems = root.findall('Play')
+        self.assertEquals(len(elems), 1)
+
+        self.assertIn('Stuart%20Childs.mp3', elems[0].text)
+
+    def test_from_unknown_to_uk(self):
+        response = self.request('POST','/caller', data={'From': 11111, 'To': nums['uk_twilio']}, auth=(http_user,http_pass))
+
+        self.assertEquals(response.status, "200 OK")
+        root = ElementTree.fromstring(response.data)
+        self.assertEquals(root.tag, 'Response')
+
+        elems = root.findall('Play')
+        self.assertEquals(len(elems), 1)
+
+        self.assertIn('UK.mp3', elems[0].text)
+
+        elems = root.findall('Dial')
+        self.assertEquals(len(elems), 1)
+
+        self.assertIn(nums['es_mobile'], elems[0].text)
+
+if __name__ == '__main__':
+    unittest.main()

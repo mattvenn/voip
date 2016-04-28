@@ -1,2 +1,1 @@
 secrets.py filter=git-crypt diff=git-crypt
-contacts.py filter=git-crypt diff=git-crypt

@@ -1,14 +1,12 @@
-from menu import Menu
+from contacts import Contacts
 
 class BaseConfiguration(object):
-    from vcard_dict import Vcard_Dict
     DEBUG = False
     TESTING = False
-    contacts = Vcard_Dict('contacts')
-    MENU = Menu(contacts)
+    #CONTACTS = Contacts('contacts')
 
 class TestConfiguration(BaseConfiguration):
-    from test_menu import test_contacts as contacts
+    from vcard_dict import Vcard_Dict
     TESTING = True
     WTF_CSRF_ENABLED = False
-    MENU = Menu(contacts)
+    CONTACTS = Contacts('test_contacts')
