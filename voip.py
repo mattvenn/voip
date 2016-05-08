@@ -153,6 +153,17 @@ def forward():
         response.say("The call failed")
         return str(response)
 
+@app.route("/message", methods=['GET', 'POST'])
+@requires_auth
+def message():
+    from_number = request.values.get('From', None) 
+    to_number = request.values.get('To', None) 
+    log.info("got message from [%s] to [%s]" % (from_number, to_number))
+
+    response = twilio.twiml.Response()
+    response.message(body, sender=from_number, to=nums['es_mobile'])
+    return str(response)
+
 if __name__ == "__main__":
 
     # create console handler and set level to info

@@ -33,6 +33,26 @@ class TestVOIP(unittest.TestCase):
             '+15556667777'})
         self.assertEquals(response.status, "401 UNAUTHORIZED")
 
+    def test_menu_phonebook_noauth(self):
+        response = self.app.post('/menu', data={'Digits': '1'})
+        self.assertEquals(response.status, "401 UNAUTHORIZED")
+
+    def test_log_auth(self):
+        response = self.app.get('/logs')
+        self.assertEquals(response.status, "401 UNAUTHORIZED")
+
+    def test_menu_dial_noauth(self):
+        response = self.app.post('/menu', data={'Digits': '2'})
+        self.assertEquals(response.status, "401 UNAUTHORIZED")
+
+    def test_start_noauth(self):
+        response = self.app.post('/caller', data={'From': nums['es_mobile'], 'To': nums['es_twilio']})
+        self.assertEquals(response.status, "401 UNAUTHORIZED")
+
+    def test_message_noauth(self):
+        response = self.app.post('/message', data={'From': nums['es_mobile'], 'To': nums['es_twilio'], 'Body' : 'blah'})
+        self.assertEquals(response.status, "401 UNAUTHORIZED")
+
     def test_dial_uk(self):
         response = self.request('POST', '/dial', data={'Digits':
             '004415556667777'}, auth=(http_user, http_pass))
@@ -69,10 +89,6 @@ class TestVOIP(unittest.TestCase):
         elems = root.findall('Say')
         self.assertEquals(len(elems), 2)
 
-    def test_menu_phonebook_noauth(self):
-        response = self.app.post('/menu', data={'Digits': '1'})
-        self.assertEquals(response.status, "401 UNAUTHORIZED")
-
     def test_menu_phonebook(self):
         response = self.request('POST', '/menu', data={'Digits': '1'},
             auth=(http_user, http_pass))
@@ -87,10 +103,6 @@ class TestVOIP(unittest.TestCase):
         elems = elems[0].findall('Say')
         self.assertEquals(len(elems), 1)
         self.assertIn('phonebook', elems[0].text)
-
-    def test_menu_dial_noauth(self):
-        response = self.app.post('/menu', data={'Digits': '2'})
-        self.assertEquals(response.status, "401 UNAUTHORIZED")
 
     def test_menu_dial(self):
         response = self.request('POST', '/menu', data={'Digits': '2'},
@@ -180,10 +192,6 @@ class TestVOIP(unittest.TestCase):
         self.assertEquals(len(elems), 1)
         self.assertIn('phonebook', elems[0].text)
 
-    def test_start_noauth(self):
-        response = self.app.post('/caller', data={'From': nums['es_mobile'], 'To': nums['es_twilio']})
-        self.assertEquals(response.status, "401 UNAUTHORIZED")
-
     def test_start_from_me(self):
         response = self.request('POST', '/caller', data={'From': nums['es_mobile'], 'To': nums['es_twilio']}, auth=(http_user, http_pass))
 
@@ -234,6 +242,29 @@ class TestVOIP(unittest.TestCase):
         self.assertEquals(len(elems), 1)
 
         self.assertIn(nums['es_mobile'], elems[0].text)
+
+    def test_forward_message_from_uk(self):
+        body = 'hello matt'
+        from_num = 1111
+        response = self.request('POST','/message', data={'From': from_num, 'To': nums['uk_twilio'], 'Body': body}, auth=(http_user,http_pass))
+        self.assertEquals(response.status, "200 OK")
+        root = ElementTree.fromstring(response.data)
+        self.assertEquals(root.tag, 'Response')
+
+        elems = root.findall('Message')
+        self.assertEquals(len(elems), 1)
+
+        elems = root.findall('Body')
+        self.assertEquals(len(elems), 1)
+        self.assertIn(body, elems[0].text)
+
+        elems = root.findall('To')
+        self.assertEquals(len(elems), 1)
+        self.assertIn(nums['es_mobile'], elems[0].text)
+
+        elems = root.findall('From')
+        self.assertEquals(len(elems), 1)
+        self.assertIn(from_num, elems[0].text)
 
 if __name__ == '__main__':
     unittest.main()
