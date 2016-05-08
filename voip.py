@@ -158,6 +158,7 @@ def forward():
 def message():
     from_number = request.values.get('From', None) 
     to_number = request.values.get('To', None) 
+    body = request.values.get('Body', None) 
     log.info("got message from [%s] to [%s]" % (from_number, to_number))
 
     response = twilio.twiml.Response()
