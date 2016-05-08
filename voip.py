@@ -137,7 +137,7 @@ def forward():
             mp3_file = 'UK.mp3'
 
         # maybe they have a custom mp3?
-        contact =  app.config['CONTACTS'].find_by_number(from_number)
+        contact = app.config['CONTACTS'].find_by_number(from_number)
         if contact is not None:
             if contact['mp3'] is not None:
                 mp3_file = contact['mp3']
@@ -161,8 +161,15 @@ def message():
     body = request.values.get('Body', None) 
     log.info("got message from [%s] to [%s]" % (from_number, to_number))
 
+    contact = app.config['CONTACTS'].find_by_number(from_number)
+    body += ' from '
+    if contact is not None:
+        body += contact['name']
+    else:
+        body += from_number
+
     response = twilio.twiml.Response()
-    response.message(body, sender=from_number, to=nums['es_mobile'])
+    response.message(body, sender=nums['es_twilio'], to=nums['es_mobile'])
     return str(response)
 
 if __name__ == "__main__":

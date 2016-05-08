@@ -11,7 +11,7 @@ from contacts import Contacts
 ntd = Contacts.name_to_digit
 
 log = logging.getLogger('')
-log.setLevel(logging.INFO)
+log.setLevel(logging.ERROR)
 
 
 class TestVOIP(unittest.TestCase):
@@ -245,7 +245,7 @@ class TestVOIP(unittest.TestCase):
 
         self.assertIn(nums['es_mobile'], elems[0].text)
 
-    def test_forward_message_from_uk(self):
+    def test_forward_unknown_message_from_uk(self):
         body = 'hello matt'
         from_num = '1111'
         response = self.request('POST','/message', data={'From': from_num, 'To': nums['uk_twilio'], 'Body': body}, auth=(http_user,http_pass))
@@ -258,11 +258,29 @@ class TestVOIP(unittest.TestCase):
         message = elems[0]
 
         self.assertEquals(message.get('to'), nums['es_mobile'])
-        self.assertEquals(message.get('from'), from_num)
+        self.assertEquals(message.get('from'), nums['es_twilio'])
 
         elems = message.findall('Body')
         self.assertEquals(len(elems), 1)
         self.assertIn(body, elems[0].text)
+        self.assertIn(from_num, elems[0].text)
+
+    def test_forward_known_message_from_uk(self):
+        body = 'hello matt'
+        from_num = '+447949'
+        response = self.request('POST','/message', data={'From': from_num, 'To': nums['uk_twilio'], 'Body': body}, auth=(http_user,http_pass))
+        self.assertEquals(response.status, "200 OK")
+        root = ElementTree.fromstring(response.data)
+        self.assertEquals(root.tag, 'Response')
+
+        elems = root.findall('Message')
+        self.assertEquals(len(elems), 1)
+        message = elems[0]
+
+        elems = message.findall('Body')
+        self.assertEquals(len(elems), 1)
+        self.assertIn(body, elems[0].text)
+        self.assertIn('Stuart', elems[0].text)
 
 
 if __name__ == '__main__':
