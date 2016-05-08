@@ -258,7 +258,7 @@ class TestVOIP(unittest.TestCase):
         message = elems[0]
 
         self.assertEquals(message.get('to'), nums['es_mobile'])
-        self.assertEquals(message.get('from'), nums['es_twilio'])
+        self.assertEquals(message.get('from'), nums['uk_twilio'])
 
         elems = message.findall('Body')
         self.assertEquals(len(elems), 1)
