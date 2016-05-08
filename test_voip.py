@@ -2,11 +2,13 @@ from voip import app
 import unittest
 from xml.etree import ElementTree
 import os
-from test_menu import ntd
 from secrets import http_user, http_pass
 from secrets import nums
 import logging
 import base64
+from contacts import Contacts
+
+ntd = Contacts.name_to_digit
 
 log = logging.getLogger('')
 log.setLevel(logging.INFO)
